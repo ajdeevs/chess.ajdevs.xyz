@@ -12,6 +12,7 @@ const Game = () => {
   const [asciiBoard, setAsciiBoard] = useState(chess.board());
   const [status, setStatus] = useState("Waiting to start...");
   const [started, setStarted] = useState(false);
+  const [playerColor, setPlayerColor] = useState<"w" | "b">("w");
 
   const INIT_GAME = "init_games";
   const MOVE = "move";
@@ -26,6 +27,7 @@ const Game = () => {
       switch (message.type) {
         case INIT_GAME:
           console.log("init game");
+          setPlayerColor(message.payload.color[0]);
           setAsciiBoard(chess.board());
           setStatus("Game started!");
           setStarted(true);
@@ -75,6 +77,7 @@ const Game = () => {
                 setBoard={setAsciiBoard}
                 board={asciiBoard}
                 socket={socket}
+                playerColor={playerColor}
               />
             </div>
           </div>

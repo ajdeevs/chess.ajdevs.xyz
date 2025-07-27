@@ -6,6 +6,7 @@ const ChessBoard = ({
   socket,
   chess,
   board,
+  playerColor,
 }: {
   board: ({
     square: Square;
@@ -15,8 +16,34 @@ const ChessBoard = ({
   socket: WebSocket;
   setBoard: any;
   chess: any;
+  playerColor: "w" | "b";
 }) => {
   const [from, setFrom] = useState<Square | null>(null);
+
+  const handleClick = (
+    sqRep: Square,
+    squareData: { type: PieceSymbol; color: Color } | null,
+  ) => {
+    if (!from) {
+      if (!squareData || squareData.color !== playerColor) return;
+      setFrom(sqRep);
+    } else {
+      if (sqRep === from) {
+        setFrom(null);
+        return;
+      }
+
+      const move = { from, to: sqRep };
+      const result = chess.move(move);
+
+      if (result) {
+        socket.send(JSON.stringify({ type: "move", payload: move }));
+        setBoard(chess.board());
+      }
+
+      setFrom(null);
+    }
+  };
 
   return (
     <div className="text-black select-none rounded-lg overflow-hidden">
@@ -35,24 +62,7 @@ const ChessBoard = ({
             return (
               <div
                 key={j}
-                onClick={() => {
-                  if (!from) {
-                    setFrom(sqRep);
-                  } else {
-                    const move = { from, to: sqRep };
-                    const result = chess.move(move);
-                    if (result) {
-                      socket.send(
-                        JSON.stringify({
-                          type: "move",
-                          payload: move,
-                        }),
-                      );
-                      setBoard(chess.board());
-                    }
-                    setFrom(null);
-                  }
-                }}
+                onClick={() => handleClick(sqRep, square)}
                 className={`w-16 h-16 ${bgColor} flex items-center justify-center cursor-pointer`}
               >
                 {square ? (
