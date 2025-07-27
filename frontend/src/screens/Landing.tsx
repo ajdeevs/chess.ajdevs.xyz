@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import Button from "../components/Button";
 
 const Landing = () => {
   const router = useNavigate();
@@ -15,14 +16,7 @@ const Landing = () => {
               Play chess with your friends
             </p>
             <div>
-              <button
-                onClick={() => {
-                  router("/game");
-                }}
-                className="bg-blue-500 hover:bg-blue-700 text-white text-2xl font-bold py-2 px-4 rounded"
-              >
-                Play Online
-              </button>
+              <Button onClick={() => router("/game")}>Play Online</Button>
             </div>
           </div>
         </div>
