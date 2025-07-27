@@ -1,14 +1,17 @@
 const Button = ({
+  ref,
   children,
   onClick,
   outlined = false,
 }: {
+  ref?: any;
   children: React.ReactNode;
   onClick?: () => void;
   outlined?: boolean;
 }) => (
   <button
     onClick={onClick}
+    ref={ref}
     className={`px-6 py-3 rounded-xl font-medium transition duration-200 ${
       outlined
         ? "border border-white text-white hover:bg-white hover:text-black"

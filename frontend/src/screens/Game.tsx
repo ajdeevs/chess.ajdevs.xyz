@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "../components/Button";
 import ChessBoard from "../components/ChessBoard";
 import { useSocket } from "../hooks/useSocket";
@@ -18,6 +18,8 @@ const Game = () => {
   const MOVE = "move";
   const GAME_OVER = "game_over";
 
+  const buttonRef = useRef(null);
+
   useEffect(() => {
     if (!socket) return;
 
@@ -28,6 +30,9 @@ const Game = () => {
         case INIT_GAME:
           console.log("init game");
           setPlayerColor(message.payload.color[0]);
+          alert(
+            `Game started! You are playing as ${playerColor === "w" ? "White ♔" : "Black ♚"}`,
+          );
           setAsciiBoard(chess.board());
           setStatus("Game started!");
           setStarted(true);
@@ -89,10 +94,13 @@ const Game = () => {
               <p className="text-slate-300 mb-6">{status}</p>
               {!started && (
                 <Button
+                  ref={buttonRef}
                   onClick={() => {
                     // setChess(new Chess());
                     setAsciiBoard(chess.board());
                     socket.send(JSON.stringify({ type: INIT_GAME }));
+                    //@ts-ignore
+                    if (buttonRef.current) buttonRef.current.disabled = true;
                   }}
                 >
                   Start New Game
