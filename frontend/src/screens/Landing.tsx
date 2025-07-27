@@ -6,9 +6,7 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white px-4 py-12">
-      {/* Hero Section */}
       <section className="max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-center gap-10">
-        {/* Text Content */}
         <div className="flex-1">
           <h1 className="text-5xl md:text-6xl font-bold mb-4 leading-tight">
             Play Chess Online

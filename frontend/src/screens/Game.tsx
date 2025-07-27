@@ -50,7 +50,7 @@ const Game = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#0f172a] text-white">
         <Navbar />
-        <div className="flex flex-col items-center">
+        <div className="flex h-screen justify-center flex-col items-center">
           <div className="w-12 h-12 border-4 border-blue-500 border-dashed rounded-full animate-spin mb-4"></div>
           <p className="text-lg font-medium animate-pulse">
             Connecting to game server...
