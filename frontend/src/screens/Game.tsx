@@ -8,7 +8,7 @@ import Footer from "../components/Footer";
 
 const Game = () => {
   const socket = useSocket();
-  const [chess, setChess] = useState(new Chess());
+  const [chess, _setChess] = useState(new Chess());
   const [asciiBoard, setAsciiBoard] = useState(chess.board());
   const [status, setStatus] = useState("Waiting to start...");
   const [started, setStarted] = useState(false);
