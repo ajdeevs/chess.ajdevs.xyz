@@ -3,11 +3,15 @@ import Button from "../components/Button";
 import ChessBoard from "../components/ChessBoard";
 import { useSocket } from "../hooks/useSocket";
 import { Chess } from "chess.js";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const Game = () => {
   const socket = useSocket();
   const [chess, setChess] = useState(new Chess());
   const [asciiBoard, setAsciiBoard] = useState(chess.board());
+  const [status, setStatus] = useState("Waiting to start...");
+  const [started, setStarted] = useState(false);
 
   const INIT_GAME = "init_games";
   const MOVE = "move";
@@ -15,57 +19,97 @@ const Game = () => {
 
   useEffect(() => {
     if (!socket) return;
+
     socket.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      console.log(message);
 
       switch (message.type) {
         case INIT_GAME:
-          setAsciiBoard(chess.board());
           console.log("init game");
+          setAsciiBoard(chess.board());
+          setStatus("Game started!");
+          setStarted(true);
           break;
+
         case MOVE:
           const move = message.payload;
+          console.log(move);
           chess.move(move);
           setAsciiBoard(chess.board());
-          console.log("move");
+          setStatus("Opponent moved");
           break;
+
         case GAME_OVER:
-          console.log("game over");
+          setStatus("Game Over!");
           break;
       }
     };
   }, [socket]);
 
-  if (!socket) return <div>Loading...</div>;
+  if (!socket) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#0f172a] text-white">
+        <Navbar />
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-blue-500 border-dashed rounded-full animate-spin mb-4"></div>
+          <p className="text-lg font-medium animate-pulse">
+            Connecting to game server...
+          </p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
-    <div className="justify-center flex">
-      <div className="pt-8 max-w-screen-lg flex w-full">
-        <div className="grid grid-cols-6 gap-4 w-full justify-center">
-          <div className="col-span-4 w-full">
-            <ChessBoard
-              chess={chess}
-              setBoard={setAsciiBoard}
-              board={asciiBoard}
-              socket={socket}
-            />
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#0f172a] to-[#1e293b] text-white">
+      <Navbar />
+
+      <main className="flex-grow py-12 px-4">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Chessboard */}
+          <div className="md:col-span-2 flex justify-center items-center">
+            <div className="w-full max-w-[500px]">
+              <ChessBoard
+                chess={chess}
+                setBoard={setAsciiBoard}
+                board={asciiBoard}
+                socket={socket}
+              />
+            </div>
           </div>
-          <div className="col-span-2">
-            <Button
-              onClick={() => {
-                socket.send(
-                  JSON.stringify({
-                    type: INIT_GAME,
-                  }),
-                );
-              }}
-            >
-              Play
-            </Button>
+
+          {/* Sidebar */}
+          <div className="bg-[#1e293b] rounded-2xl p-6 shadow-lg flex flex-col justify-between">
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Game Info</h2>
+              <p className="text-slate-300 mb-6">{status}</p>
+              {!started && (
+                <Button
+                  onClick={() => {
+                    // setChess(new Chess());
+                    setAsciiBoard(chess.board());
+                    socket.send(JSON.stringify({ type: INIT_GAME }));
+                  }}
+                >
+                  Start New Game
+                </Button>
+              )}
+            </div>
+
+            <div className="mt-8 border-t border-slate-600 pt-4">
+              <h3 className="text-lg font-medium mb-2">Tips:</h3>
+              <ul className="list-disc list-inside text-slate-400 text-sm space-y-1">
+                <li>Click on a piece to move</li>
+                <li>Legal moves are validated</li>
+                <li>Wait for your opponent's turn</li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
+      </main>
+
+      <Footer />
     </div>
   );
 };

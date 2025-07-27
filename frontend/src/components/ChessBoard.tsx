@@ -19,48 +19,49 @@ const ChessBoard = ({
   const [from, setFrom] = useState<Square | null>(null);
 
   return (
-    <div
-      className="text-black select-none"
-      style={{ fontFamily: '"Noto Sans Symbols", sans-serif' }}
-    >
+    <div className="text-black select-none rounded-lg overflow-hidden">
       {board.map((row, i) => (
         <div key={i} className="flex">
           {row.map((square, j) => {
-            const sqRep = (String.fromCharCode(97 + j) + (8 - i)) as Square; // "a1" to "h8"
-
+            const sqRep = (String.fromCharCode(97 + j) + (8 - i)) as Square;
             const isSelected = from === sqRep;
+            const isLight = (i + j) % 2 === 0;
+            const bgColor = isSelected
+              ? "bg-yellow-400"
+              : isLight
+                ? "bg-green-500"
+                : "bg-green-300";
 
             return (
               <div
                 key={j}
                 onClick={() => {
                   if (!from) {
-                    console.log("Selecting from:", sqRep);
                     setFrom(sqRep);
                   } else {
-                    const move = { from: from, to: sqRep };
-
-                    console.log("Sending move:", move);
-                    socket.send(
-                      JSON.stringify({
-                        type: "move",
-                        payload: move,
-                      }),
-                    );
-                    chess.move(move);
-                    setBoard(chess.board());
+                    const move = { from, to: sqRep };
+                    const result = chess.move(move);
+                    if (result) {
+                      socket.send(
+                        JSON.stringify({
+                          type: "move",
+                          payload: move,
+                        }),
+                      );
+                      setBoard(chess.board());
+                    }
                     setFrom(null);
                   }
                 }}
-                className={`w-16 h-16 flex items-center justify-center text-xl font-bold cursor-pointer border border-black ${
-                  isSelected
-                    ? "bg-yellow-400"
-                    : (i + j) % 2 === 0
-                      ? "bg-green-500"
-                      : "bg-green-300"
-                }`}
+                className={`w-16 h-16 ${bgColor} flex items-center justify-center cursor-pointer`}
               >
-                {square ? square.type : ""}
+                {square ? (
+                  <img
+                    src={`/pieces/${square.color}${square.type.toUpperCase()}.svg`}
+                    alt={`${square.color}${square.type}`}
+                    className="w-10 h-10 pointer-events-none"
+                  />
+                ) : null}
               </div>
             );
           })}
@@ -68,20 +69,6 @@ const ChessBoard = ({
       ))}
     </div>
   );
-};
-
-// Optional: display pieces as Unicode symbols
-const getPieceUnicode = (type: PieceSymbol, color: Color) => {
-  const unicodeMap: Record<PieceSymbol, { w: string; b: string }> = {
-    p: { w: "♙", b: "♟︎" },
-    r: { w: "♖", b: "♜" },
-    n: { w: "♘", b: "♞" },
-    b: { w: "♗", b: "♝" },
-    q: { w: "♕", b: "♛" },
-    k: { w: "♔", b: "♚" },
-  };
-
-  return unicodeMap[type][color];
 };
 
 export default ChessBoard;

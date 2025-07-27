@@ -1,20 +1,21 @@
-import type React from "react";
-
 const Button = ({
-  onClick,
   children,
+  onClick,
+  outlined = false,
 }: {
-  onClick: () => void;
   children: React.ReactNode;
-}) => {
-  return (
-    <button
-      onClick={onClick}
-      className="bg-blue-500 hover:bg-blue-700 text-white text-2xl font-bold py-2 px-4 rounded"
-    >
-      {children}
-    </button>
-  );
-};
-
+  onClick?: () => void;
+  outlined?: boolean;
+}) => (
+  <button
+    onClick={onClick}
+    className={`px-6 py-3 rounded-xl font-medium transition duration-200 ${
+      outlined
+        ? "border border-white text-white hover:bg-white hover:text-black"
+        : "bg-blue-600 text-white hover:bg-blue-700"
+    }`}
+  >
+    {children}
+  </button>
+);
 export default Button;
