@@ -21,14 +21,13 @@ const Game = () => {
 
       switch (message.type) {
         case INIT_GAME:
-          const newGame = new Chess();
-          setChess(newGame);
-          setAsciiBoard(newGame.board());
+          setAsciiBoard(chess.board());
           console.log("init game");
           break;
         case MOVE:
           const move = message.payload;
           chess.move(move);
+          setAsciiBoard(chess.board());
           console.log("move");
           break;
         case GAME_OVER:

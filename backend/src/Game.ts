@@ -25,10 +25,13 @@ export class Game {
   }
 
   makeMove(socket: WebSocket, move: { from: "string"; to: "string" }) {
+    console.log(move);
     if (this.movecount % 2 === 0 && socket !== this.player1) {
+      console.log("not the right player");
       return;
     }
     if (this.movecount % 2 === 1 && socket !== this.player2) {
+      console.log("not the right player");
       return;
     }
 
@@ -36,6 +39,7 @@ export class Game {
       this.board.move(move);
       this.movecount++;
     } catch (e) {
+      console.log(e);
       return;
     }
 

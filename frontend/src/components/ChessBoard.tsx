@@ -47,9 +47,9 @@ const ChessBoard = ({
                         payload: move,
                       }),
                     );
-                    setFrom(null);
                     chess.move(move);
                     setBoard(chess.board());
+                    setFrom(null);
                   }
                 }}
                 className={`w-16 h-16 flex items-center justify-center text-xl font-bold cursor-pointer border border-black ${
